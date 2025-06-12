@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './FolderSync.css'
 
 interface SyncProgress {
@@ -24,6 +24,16 @@ function FolderSync(): React.JSX.Element {
   const [icloudPath, setIcloudPath] = useState<string | null>(null)
   const [configSaved, setConfigSaved] = useState<boolean>(true)
   const [pathWarning, setPathWarning] = useState<string>('')
+  const [syncResult, setSyncResult] = useState<{
+    success: boolean
+    targetPath?: string
+    error?: string
+  } | null>(null)
+  const syncResultRef = useRef<{
+    success: boolean
+    targetPath?: string
+    error?: string
+  } | null>(null)
 
   useEffect(() => {
     // 加载保存的配置
@@ -49,6 +59,23 @@ function FolderSync(): React.JSX.Element {
     // 监听同步进度
     window.api.onSyncProgress((progress: SyncProgress) => {
       setProgress(progress)
+
+      // 当进度达到100%时，检查是否有待显示的同步结果
+      if (progress.current === progress.total && syncResultRef.current) {
+        // 延迟一点时间确保进度条动画完成
+        setTimeout(() => {
+          const result = syncResultRef.current
+          if (result && result.success) {
+            alert(`同步完成！文件已复制到：${result.targetPath}`)
+          } else if (result) {
+            alert(`同步失败：${result.error}`)
+          }
+          setSyncResult(null)
+          syncResultRef.current = null
+          setProgress(null)
+          setIsSync(false)
+        }, 500)
+      }
     })
 
     // 加载配置
@@ -199,16 +226,36 @@ function FolderSync(): React.JSX.Element {
     try {
       const result = await window.api.syncFolder(options)
 
-      if (result.success) {
-        alert(`同步完成！文件已复制到：${result.targetPath}`)
-      } else {
+      // 保存同步结果，等待进度完成后再显示
+      setSyncResult(result)
+      syncResultRef.current = result
+
+      // 如果同步失败，立即显示错误（因为不会有进度更新）
+      if (!result.success) {
         alert(`同步失败：${result.error}`)
+        setIsSync(false)
+        setProgress(null)
+        setSyncResult(null)
+        syncResultRef.current = null
+      } else {
+        // 如果成功但没有进度更新（比如没有文件需要复制），设置一个超时
+        setTimeout(() => {
+          const currentResult = syncResultRef.current
+          if (currentResult && currentResult.success) {
+            alert(`同步完成！文件已复制到：${currentResult.targetPath}`)
+            setSyncResult(null)
+            syncResultRef.current = null
+            setProgress(null)
+            setIsSync(false)
+          }
+        }, 1000) // 1秒超时
       }
     } catch (error) {
       alert(`同步出错：${error}`)
-    } finally {
       setIsSync(false)
       setProgress(null)
+      setSyncResult(null)
+      syncResultRef.current = null
     }
   }
 
