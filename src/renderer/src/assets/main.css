@@ -1,13 +1,11 @@
 @import './base.css';
 
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-image: url('./wavy-lines.svg');
-  background-size: cover;
-  user-select: none;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 code {
@@ -27,11 +25,13 @@ code {
 }
 
 #root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin-bottom: 80px;
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
 }
 
 .logo {
