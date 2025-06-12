@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: cv-app
+productName: new-sync
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: cv-app
+  executableName: new-sync
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
