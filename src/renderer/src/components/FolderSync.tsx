@@ -277,7 +277,7 @@ function FolderSync(): React.JSX.Element {
   return (
     <div className="folder-sync">
       <div className="header">
-        <h2>文件夹同步工具</h2>
+        <h2>New Sync</h2>
         <div className="header-actions">
           <div className={`config-status ${configSaved ? 'saved' : 'unsaved'}`}>
             {configSaved ? '✓ 配置已保存' : '⚠ 配置未保存'}

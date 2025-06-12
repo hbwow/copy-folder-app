@@ -134,6 +134,7 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
+    title: 'New Sync',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -164,7 +165,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.hbwow.newsync')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -240,9 +241,9 @@ app.whenReady().then(() => {
           const realTarget = await fs.realpath(target).catch(() => {
             // 如果目标路径不存在，使用父目录的真实路径
             const parentDir = path.dirname(target)
-            return fs.realpath(parentDir).then(realParent =>
-              path.join(realParent, path.basename(target))
-            )
+            return fs
+              .realpath(parentDir)
+              .then((realParent) => path.join(realParent, path.basename(target)))
           })
 
           // 规范化路径
